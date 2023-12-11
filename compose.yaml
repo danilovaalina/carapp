@@ -1,0 +1,32 @@
+services:
+  app:
+    image: 'car-app:latest'
+    build:
+      context: .
+    container_name: car-app
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/carapp
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  db:
+    image: 'postgres:16.1-alpine'
+    container_name: car-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=carapp
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  redis:
+    image: 'redis:latest'
+    ports:
+      - "6379:6379"
+    restart: always
+volumes:
+  data:
