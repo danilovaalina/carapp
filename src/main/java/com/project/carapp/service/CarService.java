@@ -7,6 +7,9 @@ import com.project.carapp.repository.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -17,6 +20,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
+@CacheConfig(cacheNames = "cars")
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class CarService {
     CarRepository carRepository;
@@ -28,10 +32,12 @@ public class CarService {
     TransactionTemplate transactionTemplate;
 
     //TODO: Batch update for component balance
+    @Cacheable(key = "#id", unless = "#result == null")
     public Car getCarById(Long id) {
        return carRepository.getCarById(id);
     }
 
+    @CachePut()
     public Car createCar(Map<Long, Long> components) {
         Car car = new Car();
         List<CarProperty> carProperties = new ArrayList<>();
@@ -54,7 +60,7 @@ public class CarService {
         for (Long componentId : components.keySet()) {
             if (!componentBalances.containsKey(componentId)) return null;
 
-            String type = componentRepository.getComponentById(componentId).getType();
+            String type = componentRepository.findComponentById(componentId).getType();
 
             Long count = components.get(componentId);
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -12,7 +13,7 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 @Table(name = "component")
-public class Component {
+public class Component implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class Component {
     @Column(name = "type")
     private String type;
 
-    @OneToMany(mappedBy = "component")
+    @OneToMany(mappedBy = "component", fetch = FetchType.EAGER)
     private List<ComponentProperty> componentProperties;
 
     @OneToOne(mappedBy = "component")

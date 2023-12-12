@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ComponentRepository extends JpaRepository<Component, Long> {
-    List<Component> getComponentsByType(String type);
+    List<Component> findComponentsByType(String type);
 
-    Component getComponentById(Long id);
+    Component findComponentById(Long id);
 }
